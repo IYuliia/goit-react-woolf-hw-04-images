@@ -17,17 +17,16 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (query !== '' && currentPage > 0) {
-        setIsLoading(true);
-        try {
-          const data = await getAllImagesApi(query, currentPage);
-          setImages(prevImages => [...prevImages, ...data.hits]);
-          setHasMoreImages(data.hits.length === 12);
-          setIsLoading(false);
-        } catch (error) {
-          console.error('Error fetching images:', error);
-          setIsLoading(false);
-        }
+      if (!query) return;
+      setIsLoading(true);
+      try {
+        const data = await getAllImagesApi(query, currentPage);
+        setImages(prevImages => [...prevImages, ...data.hits]);
+        setHasMoreImages(data.hits.length === 12);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -62,7 +61,9 @@ const App = () => {
       }}
     >
       <Searchbar onSubmit={handleSearchSubmit} />
-      <ImageGallery images={images} onImageClick={handleImageClick} />
+      {images.length > 0 && (
+        <ImageGallery images={images} onImageClick={handleImageClick} />
+      )}
       {isLoading && <Loader />}
       {shouldLoadMore && <Button onClick={handleLoadMore} query={query} />}
       {isModalOpen && (
